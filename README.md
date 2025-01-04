@@ -100,91 +100,36 @@ Tahapan Proses Klasifikasi :
 1. **Menggunakan Klasifikasi**
 
     ```python
-   data_besi['status'] = np.where(data_besi['nilai'] > data_besi['baku_mutu'], 'Di Atas Standar', 'Dalam Standar')
+   conf_matrix = confusion_matrix(y_test, y_pred)
+    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=label_encoders['status'].classes_, yticklabels=label_encoders['status'].classes_)
+    plt.xlabel("Prediksi")
+    plt.ylabel("Aktual")
+    plt.title("Confusion Matrix")
+    plt.show()
     ```
 
     Hasilnya akan sebagai berikut
-    ![Elbow Method](https://github.com/jakabaskara/clustering-kualitas-minyak-pada-inti-sawit/blob/main/image/ElbowMethod.png)
+    ![MetodeKlasifikasi](https://github.com/basukizamzami/kualitas-sumur-air/blob/main/images/MetodeKlasifikasi.png)
 
-    Dari gambar tersebut bisa diambil nilai K yang paling optimal adalah 2
+   Pendekatan klasifikasi digunakan karena tujuan utama adalah untuk mengelompokkan data menjadi dua kategori: 'Di Atas Standar' dan 'Dalam Standar'. Metode ini cocok ketika variabel target bersifat kategoris dan tidak memerlukan prediksi nilai numerik yang spesifik.
 
-    Namun dalam case ini kami mencoba menggunakan 3 cluster karena mendekati standarisasi pembagian yang ada di lapangan yaitu kualitas buruk, kualitas bagus, dan kualitas masih bisa ditingkatkan.
-
-2. **Menggunakan nilai K yang telah ditentukan untuk melakukan K-Means Clustering**
-
-    Pada tahap menuggnakan K-Means Clustering dengan nilai K yang diambil dari perbantuan Elbow Method diatas dilakukan dua kali percobaan yaitu menggunakan nilai K = 2 dan K =3
-
-    Untuk Penggunakan nilai K = 2 pada K-Menas Clustering
+3. **Menggunakan Regresi**
 
     ```python
-    optimal_k = 2
-    kmeans = KMeans(n_clusters=optimal_k, random_state=42)
-    data_inliers['Cluster'] = kmeans.fit_predict(data_pca)
-
-    #Visualisasi Cluster
     plt.figure(figsize=(10, 6))
-    for cluster in range(optimal_k):
-        plt.scatter(data_pca[data_inliers['Cluster'] == cluster, 0],
-                    data_pca[data_inliers['Cluster'] == cluster, 1],
-                    label=f'Cluster {cluster}', alpha=0.7, s=100)
-    plt.xlabel('Principal Component 1')
-    plt.ylabel('Principal Component 2')
-    plt.title('Visualisasi Clustering setelah Penanganan Outliers, PCA, dan Normalisasi')
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
+    plt.scatter(data_besi['baku_mutu'], data_besi['nilai'], c=data_besi['status'], cmap='coolwarm', alpha=0.7)
+    plt.colorbar(label='Status (Encoded)')
+    plt.xlabel("Baku Mutu")
+    plt.ylabel("Nilai")
+    plt.title("Scatter Plot: Nilai vs Baku Mutu")
     plt.show()
+
+    print("Scatter Plot memvisualisasikan hubungan antara 'nilai' dan 'baku_mutu'.")
+    print("Titik di atas garis y=x (di mana nilai > baku_mutu) dikategorikan sebagai 'Di Atas Standar',")
+    print("sedangkan titik di bawah dikategorikan sebagai 'Dalam Standar'.")
     ```
 
-    Hasilnya seperti berikut :
-    ![KMeansClusterKeq2](https://github.com/jakabaskara/clustering-kualitas-minyak-pada-inti-sawit/blob/main/image/KMeansClusterKeq2.png)
+   Hasilnya akan sebagai berikut
+    ![MetodeRegresi](https://github.com/basukizamzami/kualitas-sumur-air/blob/main/images/MetodeRegresi.png)
 
-    Untuk Penggunakan nilai K = 3 pada K-Means Clustering
-
-    ```python
-    optimal_k = 3
-    kmeans = KMeans(n_clusters=optimal_k, random_state=42)
-    data_inliers['Cluster'] = kmeans.fit_predict(data_pca)
-
-    #Visualisasi Cluster
-    plt.figure(figsize=(10, 6))
-    for cluster in range(optimal_k):
-        plt.scatter(data_pca[data_inliers['Cluster'] == cluster, 0],
-                    data_pca[data_inliers['Cluster'] == cluster, 1],
-                    label=f'Cluster {cluster}', alpha=0.7, s=100)
-    plt.xlabel('Principal Component 1')
-    plt.ylabel('Principal Component 2')
-    plt.title('Visualisasi Clustering setelah Penanganan Outliers, PCA, dan Normalisasi')
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
-    ```
-
-    Hasilnya seperti berikut :
-    ![KMeansClusterKeq3](https://github.com/jakabaskara/clustering-kualitas-minyak-pada-inti-sawit/blob/main/image/KMeansClusterKeq3.png)
-
-    Dan dapat dilihat walaupun secara elbow method memberikan visualisasi jika k = 2 adalah nilai optimal, namun itu tidak menutup kemungkinan untuk k=3 karena secara visual datanya tercluster dengan baik.
-
-## Evaluation
-
-**Silhouette Score:**
-Berdasarkan hasil pengujian Silhouette Score berada di angka **0.32** yang berarti Clustering Cukup atau tidak buruk  tetapi juga menunjukkan bahwa clustering Anda memiliki ruang untuk perbaikan.
-
-**Davies-Bouldin Index:** Score Menunjukan di angka **1.06** menunjukkan clustering cukup baik, dengan cluster yang rapat secara internal dan cukup terpisah dari cluster lainnya.
-
-## Kesimpulan
-
-1. **Identifikasi Cluster Lebih Awal pada Inti Sawit.**
-Proses clustering yang diterapkan pada data inti sawit dari mesin Foss NIRS memungkinkan identifikasi kategori kualitas minyak lebih awal, bahkan sebelum proses ekstraksi minyak selesai. Hal ini memberikan manfaat besar dibandingkan metode konvensional yang hanya mengandalkan ALB (Asam Lemak Bebas) di tahap akhir proses.
-2. **Pengelompokan Berdasarkan Karakteristik Kualitas.** Clustering berhasil mengelompokkan inti sawit ke dalam tiga kategori, yaitu:
-
-   - **Kualitas Buruk:** Inti sawit dengan kandungan minyak rendah atau kualitas tidak memenuhi standar.
-   - **Kualitas Masih Dapat Ditingkatkan:** Inti sawit dengan kualitas sedang yang masih memiliki potensi untuk diperbaiki.
-   - **Kualitas Baik:** Inti sawit dengan kandungan minyak tinggi dan kualitas yang memenuhi standar.
-
-    Hal ini memberikan informasi yang lebih kaya dibandingkan hanya mempertimbangkan ALB sebagai satu-satunya indikator kualitas.
-
-## Referensi
-
-[1] [FOSS NIRS SAWIT](https://news.kharisma-sawit.com/berita-terkini-beginilah-cara-kerja-foss-nir-pabrik-sawit-efektif-untuk-pks-284#:~:text=Bisa%20dikatakan%20bahwa%20FOSS%20NIRS)
+   Pendekatan regresi dapat digunakan jika tujuan adalah untuk memprediksi nilai numerik ('nilai') secara spesifik. Setelah prediksi nilai, dapat dibandingkan dengan 'baku_mutu' untuk menentukan apakah berada di atas atau dalam standar." Namun, regresi memerlukan langkah tambahan dan biasanya lebih kompleks jika fokus utama hanya pada klasifikasi kategori.
