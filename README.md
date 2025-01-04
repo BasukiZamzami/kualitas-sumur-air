@@ -132,4 +132,12 @@ Tahapan Proses Klasifikasi :
    Hasilnya akan sebagai berikut
     ![MetodeRegresi](https://github.com/basukizamzami/kualitas-sumur-air/blob/main/images/MetodeRegresi.png)
 
+
    Pendekatan regresi dapat digunakan jika tujuan adalah untuk memprediksi nilai numerik ('nilai') secara spesifik. Setelah prediksi nilai, dapat dibandingkan dengan 'baku_mutu' untuk menentukan apakah berada di atas atau dalam standar." Namun, regresi memerlukan langkah tambahan dan biasanya lebih kompleks jika fokus utama hanya pada klasifikasi kategori.
+
+## Kesimpulan
+
+Kode ini membantu mengklasifikasikan apakah kadar besi di suatu lokasi berada di atas standar atau dalam standar, sesuai dengan baku mutu yang ditetapkan.
+
+Untuk lokasi yang memiliki kadar besi di atas standar, perlu dilakukan mitigasi lebih lanjut.
+Untuk lokasi dalam standar, tetap lakukan pemantauan berkala untuk memastikan kualitas air tetap terjaga.
